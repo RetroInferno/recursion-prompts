@@ -99,6 +99,16 @@ var range = function(x, y) {
 // exponent(4,3); // 64
 // https://www.khanacademy.org/computing/computer-science/algorithms/recursive-algorithms/a/computing-powers-of-a-number
 var exponent = function(base, exp) {
+  if (exp < 0) {
+    var expAbs = (-1 * exp);
+    return 1 / exponent(base, expAbs)
+  } else {
+    if (exp === 0 ) {
+      return 1;
+    } else {
+      return base * exponent(base, exp - 1)
+    }
+  }
 };
 
 // 8. Determine if a number is a power of two.
@@ -106,14 +116,33 @@ var exponent = function(base, exp) {
 // powerOfTwo(16); // true
 // powerOfTwo(10); // false
 var powerOfTwo = function(n) {
+  if ( n === 1) {
+    return true;
+  } else if ( n < 1) {
+    return false;
+  } else {
+    return powerOfTwo(n/2)
+  }
 };
 
 // 9. Write a function that reverses a string.
 var reverse = function(string) {
+  if (string.length < 1) {
+    return string;
+  } else {
+    return string[string.length - 1] + reverse(string.slice(0, string.length - 1))
+  }
 };
 
 // 10. Write a function that determines if a string is a palindrome.
 var palindrome = function(string) {
+  string = string.toLowerCase().replaceAll(' ', '');
+  if (string.length <= 1) {
+    return true;
+  } else {
+    var equal = (string[0] === string[string.length - 1]);
+    return palindrome(string.slice(1,string.length - 1)) && equal;
+  }
 };
 
 // 11. Write a function that returns the remainder of x divided by y without using the
@@ -195,11 +224,32 @@ var countKeysInObj = function(obj, key) {
 // countValuesInObj(obj, 'r') // 2
 // countValuesInObj(obj, 'e') // 1
 var countValuesInObj = function(obj, value) {
+  var currCount = 0;
+  for (key in obj) {
+    if (obj[key] === value) {
+      //kind of a weird way to do a base case / recursion combo
+      currCount += 1;
+    } else if (typeof obj[key] === 'object') {
+      currCount += countValuesInObj(obj[key], value);
+    }
+  }
+  return currCount;
 };
 
 // 24. Find all keys in an object (and nested objects) by a provided name and rename
 // them to a provided new name while preserving the value stored at that key.
 var replaceKeysInObj = function(obj, oldKey, newKey) {
+  var cloneObj = obj;
+  for (var key in cloneObj) {
+    if (typeof cloneObj[key] === 'object') {
+      cloneObj[key] = replaceKeysInObj(cloneObj[key], oldKey, newKey);
+    }
+    if (key === oldKey) {
+      cloneObj[newKey] = cloneObj[oldKey];
+      delete cloneObj[oldKey];
+    }
+  }
+  return cloneObj;
 };
 
 // 25. Get the first n Fibonacci numbers. In the Fibonacci sequence, each subsequent
@@ -244,6 +294,14 @@ var nestedEvenSum = function(obj) {
 // 30. Flatten an array containing nested arrays.
 // flatten([1,[2],[3,[[4]]],5]); // [1,2,3,4,5]
 var flatten = function(array) {
+  if (array.length < 1) {
+    return [];
+  } else {
+    if (!Array.isArray(array[0])) {
+      return [array[0]].concat(flatten(array.slice(1)));
+    }
+    return flatten(array[0]).concat(flatten(array.slice(1)));
+  }
 };
 
 // 31. Given a string, return an object containing tallies of each letter.
